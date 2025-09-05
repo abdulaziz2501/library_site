@@ -2,7 +2,15 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
+from catalog.models import *
 
+
+a = Author.objects.create(first_name="George", last_name="Orwell")
+c = Category.objects.create(name="Dystopia")
+b = Book.objects.create(title="1984", author=a, description="Classic novel", isbn="9780451524935", year=1949)
+b.categories.add(c)
+BookCopy.objects.create(book=b, barcode="C1984-001")
+BookCopy.objects.create(book=b, barcode="C1984-002")
 
 def main():
     """Run administrative tasks."""

@@ -1,0 +1,15 @@
+<div class="col">
+<div class="card h-100 shadow-sm">
+{% if b.cover %}
+<img src="{{ b.cover.url }}" class="card-img-top" alt="{{ b.title }}" />
+{% endif %}
+<div class="card-body d-flex flex-column">
+<h5 class="card-title">{{ b.title }}</h5>
+<p class="text-muted mb-1">{{ b.author }}</p>
+<div class="mt-auto d-flex justify-content-between align-items-center">
+<a href="{{ b.get_absolute_url }}" class="btn btn-sm btn-primary">Details</a>
+<small class="text-muted">Available: {{ b.copies.all|dictsort:'status'|length }}</small>
+</div>
+</div>
+</div>
+</div>
