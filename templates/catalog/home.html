@@ -19,8 +19,9 @@
   <a href="{% url 'catalog:book_list' %}" class="btn btn-outline-secondary btn-sm">View all</a>
 </div>
 
+
 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
-  {% for b in object_list %}
+  {% for b in latest_books %}
     {% include 'catalog/_book_card.html' %}
   {% empty %}
     <p>No books yet.</p>

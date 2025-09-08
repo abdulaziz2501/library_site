@@ -55,7 +55,7 @@
                     <button class="btn btn-success">Submit review</button>
                 </form>
                 {% else %}
-                    <a href="{%- url 'login' -%}">Login</a> to leave a review.
+                    <a href="{% url 'login' %}">Login</a> to leave a review.
                 {% endif %}
         </div>
     </div>

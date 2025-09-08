@@ -7,9 +7,9 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         User = get_user_model()
-        u, _ = User.objects.get_or_create(username="demo", defaults={"email":"demo@example.com"})
+        u, _ = User.objects.get_or_create(username="abdulaziz", defaults={"email":"demo@example.com"})
         if not u.has_usable_password():
-            u.set_password("demo12345"); u.save()
+            u.set_password("0940418a"); u.save()
 
         fiction,_ = Category.objects.get_or_create(name="Fiction")
         dystopia,_ = Category.objects.get_or_create(name="Dystopia")

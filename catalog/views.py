@@ -13,6 +13,17 @@ from .models import Book, BookCopy, Borrow
 class HomeView(TemplateView):
     template_name = "catalog/home.html"
 
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        # Oxirgi qo‘shilgan 8 ta kitob (UZ: so‘nggi kitoblar)
+        ctx["latest_books"] = (
+            Book.objects
+            .select_related("author")
+            .prefetch_related("categories", "copies")
+            .order_by("-id")[:8]
+        )
+        return ctx
+
 
 class BookListView(ListView):
     model = Book
