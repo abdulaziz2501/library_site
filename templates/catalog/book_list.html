@@ -2,23 +2,23 @@
 {% block title %}Books — Library{% endblock %}
 {% block content %}
 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
-{% for b in books %}
-{% include 'catalog/_book_card.html' %}
-{% empty %}
-<p>No books found.</p>
-{% endfor %}
+    {% for b in books %}
+    {% include 'catalog/_book_card.html' %}
+    {% empty %}
+        <p>No books found.</p>
+    {% endfor %}
 </div>
 <nav class="mt-4" aria-label="Page navigation">
-{% if is_paginated %}
-<ul class="pagination justify-content-center">
-{% if page_obj.has_previous %}
-<li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
-{% endif %}
-<li class="page-item disabled"><span class="page-link">Page {{ page_obj.number }} of {{ paginator.num_pages }}</span></li>
-{% if page_obj.has_next %}
-<li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
-{% endif %}
-</ul>
-{% endif %}
+    {% if is_paginated %}
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+        {% endif %}
+            <li class="page-item disabled"><span class="page-link">Page {{ page_obj.number }} of {{ paginator.num_pages }}</span></li>
+        {% if page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+        {% endif %}
+    </ul>
+    {% endif %}
 </nav>
 {% endblock %}

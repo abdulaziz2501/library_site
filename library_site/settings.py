@@ -58,15 +58,19 @@ MIDDLEWARE = [
 ROOT_URLCONF = "library_site.urls"
 
 
+
 TEMPLATES = [
     {
-        "BACKEND": "django.templates.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "templates"],
+        # must be EXACTLY this backend
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        # optionally set the alias explicitly to "django"
+        "NAME": "django",
+        "DIRS": [BASE_DIR / "templates"],  # make sure this folder exists
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
-                "django.templates.context_processors.debug",
-                "django.templates.context_processors.request",
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],

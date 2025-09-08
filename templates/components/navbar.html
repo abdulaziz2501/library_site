@@ -1,20 +1,20 @@
 <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom">
     <div class="container">
-        <a class="navbar-brand fw-bold" href="{%- url 'catalog:home' -%}">📚 MyLibrary</a>
+        <a class="navbar-brand fw-bold" href="{% url 'catalog:home' %}">📚 MyLibrary</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav" aria-controls="nav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="nav">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item"><a class="nav-link" href="{%- url 'catalog:book_list' -%}">Books</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'catalog:book_list' %}">Books</a></li>
             </ul>
             <ul class="navbar-nav">
                 {% if user.is_authenticated %}
-                    <li class="nav-item"><a class="nav-link" href="{%- url 'catalog:profile' -%}">Hello, {{ user.username }}</a></li>
-                    <li class="nav-item"><a class="btn btn-outline-danger ms-2" href="{%- url 'logout' -%}">Logout</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'catalog:profile' %}">Hello, {{ user.username }}</a></li>
+                    <li class="nav-item"><a class="btn btn-outline-danger ms-2" href="{% url 'logout' %}">Logout</a></li>
                 {% else %}
-                    <li class="nav-item"><a class="nav-link" href="{%- url 'login' -%}">Login</a></li>
-                    <li class="nav-item"><a class="btn btn-primary ms-2" href="{%- url 'catalog:signup' -%}">Sign Up</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
+                    <li class="nav-item"><a class="btn btn-primary ms-2" href="{% url 'catalog:signup' %}">Sign Up</a></li>
                 {% endif %}
             </ul>
         </div>

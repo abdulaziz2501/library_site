@@ -4,16 +4,16 @@
 <h2 class="mb-3">My Loans</h2>
 <div class="row g-3">
 {% for br in active_loans %}
-<div class="col-md-6">
-<div class="card shadow-sm h-100">
-<div class="card-body">
-<h5 class="card-title">{{ br.copy.book.title }}</h5>
-<p class="mb-1">Copy: {{ br.copy.barcode }}</p>
-<p class="mb-1">Due date: <strong>{{ br.due_date }}</strong></p>
-<a class="btn btn-outline-primary btn-sm" href="{%- url 'catalog:return_copy' br.id -%}">Return</a>
-</div>
-</div>
-</div>
+    <div class="col-md-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h5 class="card-title">{{ br.copy.book.title }}</h5>
+                    <p class="mb-1">Copy: {{ br.copy.barcode }}</p>
+                    <p class="mb-1">Due date: <strong>{{ br.due_date }}</strong></p>
+                <a class="btn btn-outline-primary btn-sm" href="{% url 'catalog:return_copy' br.id %}">Return</a>
+            </div>
+        </div>
+    </div>
 {% empty %}
 <p>No active loans.</p>
 {% endfor %}
@@ -21,10 +21,10 @@
 <hr class="my-4">
 <h3>History</h3>
 <ul>
-{% for br in history %}
-<li>{{ br.copy.book.title }} — returned {{ br.returned_at|date:"M d, Y" }}</li>
-{% empty %}
-<li>No history yet.</li>
-{% endfor %}
+    {% for br in history %}
+        <li>{{ br.copy.book.title }} — returned {{ br.returned_at|date:"M d, Y" }}</li>
+        {% empty %}
+        <li>No history yet.</li>
+    {% endfor %}
 </ul>
 {% endblock %}
