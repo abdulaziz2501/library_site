@@ -1,0 +1,127 @@
+<!-- templates/books/book_list.html -->
+{% extends 'base.html' %}
+
+{% block title %}Kitoblar ro'yxati - Kutubxona{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1><i class="bi bi-book-fill"></i> Kitoblar katalogi</h1>
+        <p class="text-muted">Jami {{ books.count }} ta kitob topildi</p>
+    </div>
+</div>
+
+<!-- Search and Filter -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <!-- Search -->
+            <div class="col-md-4">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" name="search" class="form-control"
+                           placeholder="Kitob, muallif yoki ISBN bo'yicha qidirish..."
+                           value="{{ search_query }}">
+                </div>
+            </div>
+
+            <!-- Category Filter -->
+            <div class="col-md-2">
+                <select name="category" class="form-select">
+                    <option value="">Barcha kategoriyalar</option>
+                    {% for category in categories %}
+                    <option value="{{ category.id }}" {% if selected_category == category.id|stringformat:"s" %}selected{% endif %}>
+                        {{ category.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Status Filter -->
+            <div class="col-md-2">
+                <select name="status" class="form-select">
+                    <option value="">Barcha holatlar</option>
+                    <option value="available" {% if selected_status == 'available' %}selected{% endif %}>Mavjud</option>
+                    <option value="borrowed" {% if selected_status == 'borrowed' %}selected{% endif %}>Olingan</option>
+                    <option value="reserved" {% if selected_status == 'reserved' %}selected{% endif %}>Band</option>
+                </select>
+            </div>
+
+            <!-- Sort -->
+            <div class="col-md-2">
+                <select name="sort" class="form-select">
+                    <option value="-added_date">Yangi qo'shilgan</option>
+                    <option value="title">Nomi (A-Z)</option>
+                    <option value="-title">Nomi (Z-A)</option>
+                    <option value="publication_year">Yili (o'sish)</option>
+                    <option value="-publication_year">Yili (kamayish)</option>
+                </select>
+            </div>
+
+            <!-- Buttons -->
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-funnel"></i> Filter
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Books Grid -->
+<div class="row">
+    {% for book in books %}
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="card h-100">
+            {% if book.cover_image %}
+            <img src="{{ book.cover_image.url }}" class="card-img-top book-cover" alt="{{ book.title }}">
+            {% else %}
+            <div class="card-img-top book-cover bg-secondary d-flex align-items-center justify-content-center">
+                <i class="bi bi-book text-white" style="font-size: 5rem;"></i>
+            </div>
+            {% endif %}
+
+            <div class="card-body">
+                <h5 class="card-title">{{ book.title|truncatewords:7 }}</h5>
+                <p class="card-text text-muted mb-2">
+                    <i class="bi bi-person"></i> {{ book.get_authors_display|truncatewords:3 }}
+                </p>
+                <p class="card-text text-muted mb-2">
+                    <i class="bi bi-calendar"></i> {{ book.publication_year }}
+                </p>
+
+                <div class="mb-3">
+                    <span class="badge bg-info">{{ book.category.name }}</span>
+                    {% if book.is_available %}
+                    <span class="badge bg-success">Mavjud</span>
+                    {% else %}
+                    <span class="badge bg-danger">Yo'q</span>
+                    {% endif %}
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <small class="text-muted">
+                        <i class="bi bi-bookshelf"></i> {{ book.available_copies }}/{{ book.total_copies }} nusxa
+                    </small>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">
+                        <i class="bi bi-geo-alt"></i> {{ book.shelf_location }}
+                    </small>
+                    <a href="{% url 'book_detail' book.id %}" class="btn btn-sm btn-primary">
+                        Batafsil <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-info text-center">
+            <i class="bi bi-info-circle"></i> Hech qanday kitob topilmadi
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

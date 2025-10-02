@@ -1,0 +1,225 @@
+<!-- templates/books/book_detail.html -->
+{% extends 'base.html' %}
+
+{% block title %}{{ book.title }} - Kutubxona{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Bosh sahifa</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'book_list' %}">Kitoblar</a></li>
+        <li class="breadcrumb-item active">{{ book.title|truncatewords:5 }}</li>
+    </ol>
+</nav>
+
+<div class="row mb-5">
+    <!-- Book Cover -->
+    <div class="col-md-4">
+        <div class="card">
+            {% if book.cover_image %}
+            <img src="{{ book.cover_image.url }}" class="card-img-top" alt="{{ book.title }}" style="height: 500px; object-fit: cover;">
+            {% else %}
+            <div class="bg-secondary d-flex align-items-center justify-content-center" style="height: 500px;">
+                <i class="bi bi-book text-white" style="font-size: 8rem;"></i>
+            </div>
+            {% endif %}
+
+            <div class="card-body">
+                <!-- Status -->
+                <div class="mb-3">
+                    {% if book.status == 'available' %}
+                    <span class="badge bg-success w-100 p-3">
+                        <i class="bi bi-check-circle"></i> Mavjud
+                    </span>
+                    {% elif book.status == 'borrowed' %}
+                    <span class="badge bg-danger w-100 p-3">
+                        <i class="bi bi-x-circle"></i> Olingan
+                    </span>
+                    {% elif book.status == 'reserved' %}
+                    <span class="badge bg-warning w-100 p-3">
+                        <i class="bi bi-exclamation-circle"></i> Band
+                    </span>
+                    {% endif %}
+                </div>
+
+                <!-- Availability -->
+                <div class="alert alert-info">
+                    <h5 class="mb-0">
+                        <i class="bi bi-bookshelf"></i>
+                        {{ book.available_copies }} / {{ book.total_copies }} nusxa mavjud
+                    </h5>
+                </div>
+
+                <!-- Borrow Button -->
+                {% if user.is_authenticated and book.is_available %}
+                <a href="{% url 'borrow_book' book.id %}" class="btn btn-primary w-100 mb-2">
+                    <i class="bi bi-hand-thumbs-up"></i> Kitobni berish
+                </a>
+                {% endif %}
+
+                <!-- Location -->
+                <div class="alert alert-secondary">
+                    <strong><i class="bi bi-geo-alt-fill"></i> Joylashuv:</strong><br>
+                    {{ book.shelf_location }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Book Details -->
+    <div class="col-md-8">
+        <h1 class="mb-3">{{ book.title }}</h1>
+
+        <div class="mb-4">
+            <h5 class="text-primary">
+                <i class="bi bi-person-fill"></i> Muallif(lar):
+            </h5>
+            <p class="lead">
+                {% for author in book.authors.all %}
+                <a href="{% url 'author_detail' author.id %}" class="text-decoration-none">
+                    {{ author.first_name }} {{ author.last_name }}
+                </a>
+                {% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </p>
+        </div>
+
+        <!-- Info Table -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Ma'lumotlar</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr>
+                        <th width="30%"><i class="bi bi-grid-3x3-gap"></i> Kategoriya:</th>
+                        <td>
+                            <a href="{% url 'category_detail' book.category.id %}" class="text-decoration-none">
+                                <span class="badge bg-info">{{ book.category.name }}</span>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><i class="bi bi-calendar"></i> Nashr yili:</th>
+                        <td>{{ book.publication_year }}</td>
+                    </tr>
+                    {% if book.publisher %}
+                    <tr>
+                        <th><i class="bi bi-building"></i> Nashriyot:</th>
+                        <td>{{ book.publisher.name }}</td>
+                    </tr>
+                    {% endif %}
+                    {% if book.pages %}
+                    <tr>
+                        <th><i class="bi bi-file-text"></i> Sahifalar:</th>
+                        <td>{{ book.pages }} sahifa</td>
+                    </tr>
+                    {% endif %}
+                    <tr>
+                        <th><i class="bi bi-translate"></i> Til:</th>
+                        <td>{{ book.language }}</td>
+                    </tr>
+                    {% if book.isbn %}
+                    <tr>
+                        <th><i class="bi bi-upc-scan"></i> ISBN:</th>
+                        <td><code>{{ book.isbn }}</code></td>
+                    </tr>
+                    {% endif %}
+                    <tr>
+                        <th><i class="bi bi-hash"></i> Inventar raqami:</th>
+                        <td><code>{{ book.inventory_number }}</code></td>
+                    </tr>
+                    <tr>
+                        <th><i class="bi bi-clock"></i> Qo'shilgan sana:</th>
+                        <td>{{ book.added_date|date:"d.m.Y H:i" }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Description -->
+        {% if book.description %}
+        <div class="card mb-4">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0"><i class="bi bi-file-text"></i> Tavsif</h5>
+            </div>
+            <div class="card-body">
+                <p>{{ book.description }}</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Borrow History -->
+        {% if borrow_history %}
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="bi bi-clock-history"></i> Oxirgi olishlar tarixi</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Oluvchi</th>
+                                <th>Olingan sana</th>
+                                <th>Qaytarish muddati</th>
+                                <th>Holat</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in borrow_history %}
+                            <tr>
+                                <td>{{ record.borrower_name }}</td>
+                                <td>{{ record.borrow_date|date:"d.m.Y" }}</td>
+                                <td>{{ record.due_date|date:"d.m.Y" }}</td>
+                                <td>
+                                    {% if record.is_returned %}
+                                    <span class="badge bg-success">Qaytarildi</span>
+                                    {% elif record.is_overdue %}
+                                    <span class="badge bg-danger">Muddati o'tgan</span>
+                                    {% else %}
+                                    <span class="badge bg-primary">O'qilmoqda</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Related Books -->
+{% if related_books %}
+<div class="row">
+    <div class="col-12">
+        <h3 class="mb-4"><i class="bi bi-link-45deg"></i> O'xshash kitoblar</h3>
+        <div class="row">
+            {% for related in related_books %}
+            <div class="col-md-3 mb-3">
+                <div class="card h-100">
+                    {% if related.cover_image %}
+                    <img src="{{ related.cover_image.url }}" class="card-img-top" alt="{{ related.title }}" style="height: 200px; object-fit: cover;">
+                    {% else %}
+                    <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <i class="bi bi-book text-white" style="font-size: 3rem;"></i>
+                    </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <h6 class="card-title">{{ related.title|truncatewords:5 }}</h6>
+                        <p class="card-text text-muted small">{{ related.get_authors_display|truncatewords:2 }}</p>
+                        <a href="{% url 'book_detail' related.id %}" class="btn btn-sm btn-outline-primary">
+                            Ko'rish
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

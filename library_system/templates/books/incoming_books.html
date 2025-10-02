@@ -1,0 +1,136 @@
+<!-- templates/books/incoming_books.html -->
+{% extends 'base.html' %}
+
+{% block title %}Yangi kitoblar - Kutubxona{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1><i class="bi bi-inbox-fill"></i> Yangi keladigan kitoblar</h1>
+        <p class="text-muted">Kutubxonaga yaqinda kelishi kutilayotgan va kelgan kitoblar</p>
+    </div>
+</div>
+
+<!-- Overdue Alert -->
+{% if overdue_books %}
+<div class="alert alert-warning">
+    <h5><i class="bi bi-exclamation-triangle-fill"></i> Kechikkan kitoblar!</h5>
+    <p class="mb-0">{{ overdue_books.count }} ta kitobning kelish muddati o'tgan.</p>
+</div>
+{% endif %}
+
+<!-- Pending Books -->
+<div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">
+            <i class="bi bi-hourglass-split"></i> Kutilayotgan kitoblar ({{ pending_books.count }})
+        </h5>
+    </div>
+    <div class="card-body">
+        {% if pending_books %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Kitob nomi</th>
+                        <th>Kategoriya</th>
+                        <th>Miqdori</th>
+                        <th>Kutilayotgan sana</th>
+                        <th>Ta'minotchi</th>
+                        <th>Holat</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for incoming in pending_books %}
+                    <tr {% if incoming.is_overdue %}class="table-warning"{% endif %}>
+                        <td><strong>{{ incoming.title }}</strong></td>
+                        <td><span class="badge bg-info">{{ incoming.category.name }}</span></td>
+                        <td><span class="badge bg-primary">{{ incoming.quantity }} dona</span></td>
+                        <td>
+                            <i class="bi bi-calendar-event"></i> {{ incoming.expected_date|date:"d.m.Y" }}
+                            {% if incoming.is_overdue %}
+                            <br><span class="badge bg-danger">Kechikdi</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ incoming.supplier|default:"Ko'rsatilmagan" }}</td>
+                        <td>
+                            {% if incoming.is_overdue %}
+                            <span class="badge bg-danger">
+                                <i class="bi bi-exclamation-triangle"></i> Kechikdi
+                            </span>
+                            {% else %}
+                            <span class="badge bg-warning">
+                                <i class="bi bi-hourglass"></i> Kutilmoqda
+                            </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% if incoming.notes %}
+                    <tr>
+                        <td colspan="6" class="bg-light">
+                            <small><strong>Izoh:</strong> {{ incoming.notes }}</small>
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info text-center">
+            <i class="bi bi-info-circle"></i> Hozirda kutilayotgan kitoblar yo'q
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Arrived Books -->
+<div class="card">
+    <div class="card-header bg-success text-white">
+        <h5 class="mb-0">
+            <i class="bi bi-check-circle"></i> Kelgan kitoblar (Oxirgi 10 ta)
+        </h5>
+    </div>
+    <div class="card-body">
+        {% if arrived_books %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Kitob nomi</th>
+                        <th>Kategoriya</th>
+                        <th>Miqdori</th>
+                        <th>Kutilgan sana</th>
+                        <th>Kelgan sana</th>
+                        <th>Holat</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for incoming in arrived_books %}
+                    <tr>
+                        <td><strong>{{ incoming.title }}</strong></td>
+                        <td><span class="badge bg-info">{{ incoming.category.name }}</span></td>
+                        <td><span class="badge bg-primary">{{ incoming.quantity }} dona</span></td>
+                        <td>{{ incoming.expected_date|date:"d.m.Y" }}</td>
+                        <td>{{ incoming.arrived_date|date:"d.m.Y" }}</td>
+                        <td>
+                            <span class="badge bg-success">
+                                <i class="bi bi-check-circle"></i> Keldi
+                            </span>
+                            {% if incoming.arrived_date > incoming.expected_date %}
+                            <br><small class="text-warning">Kechiktirilgan</small>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info text-center">
+            <i class="bi bi-info-circle"></i> Kelgan kitoblar tarixi yo'q
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

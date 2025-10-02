@@ -1,0 +1,146 @@
+<!-- templates/books/borrow_history.html -->
+{% extends 'base.html' %}
+
+{% block title %}Olish tarixi - Kutubxona{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1><i class="bi bi-clock-history"></i> Kitoblar olish tarixi</h1>
+        <p class="text-muted">Barcha kitob olish va qaytarish ma'lumotlari</p>
+    </div>
+</div>
+
+<!-- Overdue Books Alert -->
+{% if overdue_borrows %}
+<div class="alert alert-danger">
+    <h5><i class="bi bi-exclamation-triangle-fill"></i> Muddati o'tgan kitoblar!</h5>
+    <p class="mb-0">{{ overdue_borrows.count }} ta kitobning qaytarish muddati o'tgan. Iltimos, kutubxonaga aloqaga chiqing.</p>
+</div>
+{% endif %}
+
+<!-- Current Borrows -->
+<div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0"><i class="bi bi-book-half"></i> Hozir olingan kitoblar ({{ current_borrows.count }})</h5>
+    </div>
+    <div class="card-body">
+        {% if current_borrows %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Kitob</th>
+                        <th>Oluvchi</th>
+                        <th>Telefon</th>
+                        <th>Olingan sana</th>
+                        <th>Qaytarish muddati</th>
+                        <th>Holat</th>
+                        <th>Harakatlar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in current_borrows %}
+                    <tr {% if record.is_overdue %}class="table-danger"{% endif %}>
+                        <td>
+                            <a href="{% url 'book_detail' record.book.id %}" class="text-decoration-none">
+                                <strong>{{ record.book.title|truncatewords:5 }}</strong>
+                            </a>
+                            <br>
+                            <small class="text-muted">{{ record.book.get_authors_display|truncatewords:2 }}</small>
+                        </td>
+                        <td>{{ record.borrower_name }}</td>
+                        <td>{{ record.borrower_phone }}</td>
+                        <td>{{ record.borrow_date|date:"d.m.Y" }}</td>
+                        <td>
+                            {{ record.due_date|date:"d.m.Y" }}
+                            {% if record.is_overdue %}
+                            <br><span class="badge bg-danger">Kechikdi!</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if record.is_overdue %}
+                            <span class="badge bg-danger">
+                                <i class="bi bi-exclamation-triangle"></i> Muddati o'tgan
+                            </span>
+                            {% else %}
+                            <span class="badge bg-primary">
+                                <i class="bi bi-book"></i> O'qilmoqda
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if user.is_authenticated %}
+                            <a href="{% url 'return_book' record.id %}"
+                               class="btn btn-sm btn-success"
+                               onclick="return confirm('Kitob qaytarilganini tasdiqlaysizmi?')">
+                                <i class="bi bi-check-circle"></i> Qaytarish
+                            </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info text-center">
+            <i class="bi bi-info-circle"></i> Hozirda olingan kitoblar yo'q
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Returned Books -->
+<div class="card">
+    <div class="card-header bg-success text-white">
+        <h5 class="mb-0"><i class="bi bi-check-circle"></i> Qaytarilgan kitoblar (Oxirgi 20 ta)</h5>
+    </div>
+    <div class="card-body">
+        {% if returned_borrows %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Kitob</th>
+                        <th>Oluvchi</th>
+                        <th>Olingan sana</th>
+                        <th>Qaytarish muddati</th>
+                        <th>Qaytarilgan sana</th>
+                        <th>Holat</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in returned_borrows %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'book_detail' record.book.id %}" class="text-decoration-none">
+                                <strong>{{ record.book.title|truncatewords:5 }}</strong>
+                            </a>
+                            <br>
+                            <small class="text-muted">{{ record.book.get_authors_display|truncatewords:2 }}</small>
+                        </td>
+                        <td>{{ record.borrower_name }}</td>
+                        <td>{{ record.borrow_date|date:"d.m.Y" }}</td>
+                        <td>{{ record.due_date|date:"d.m.Y" }}</td>
+                        <td>{{ record.return_date|date:"d.m.Y" }}</td>
+                        <td>
+                            {% if record.return_date > record.due_date %}
+                            <span class="badge bg-warning">Kechiktirilgan</span>
+                            {% else %}
+                            <span class="badge bg-success">Vaqtida</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info text-center">
+            <i class="bi bi-info-circle"></i> Qaytarilgan kitoblar tarixi yo'q
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

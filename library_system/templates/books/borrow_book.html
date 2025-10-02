@@ -1,0 +1,106 @@
+<!-- templates/books/borrow_book.html -->
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Kitob berish - {{ book.title }}{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Bosh sahifa</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'book_list' %}">Kitoblar</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'book_detail' book.id %}">{{ book.title|truncatewords:3 }}</a></li>
+        <li class="breadcrumb-item active">Berish</li>
+    </ol>
+</nav>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="bi bi-hand-thumbs-up"></i> Kitob berish</h4>
+            </div>
+            <div class="card-body">
+                <!-- Book Info -->
+                <div class="alert alert-info">
+                    <div class="row align-items-center">
+                        <div class="col-md-3">
+                            {% if book.cover_image %}
+                            <img src="{{ book.cover_image.url }}" class="img-fluid rounded" alt="{{ book.title }}">
+                            {% else %}
+                            <div class="bg-secondary rounded d-flex align-items-center justify-content-center" style="height: 150px;">
+                                <i class="bi bi-book text-white" style="font-size: 3rem;"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-9">
+                            <h5>{{ book.title }}</h5>
+                            <p class="mb-1"><strong>Muallif:</strong> {{ book.get_authors_display }}</p>
+                            <p class="mb-1"><strong>Kategoriya:</strong> {{ book.category.name }}</p>
+                            <p class="mb-1"><strong>Joylashuv:</strong> {{ book.shelf_location }}</p>
+                            <p class="mb-0"><strong>Mavjud:</strong> {{ book.available_copies }} nusxa</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form -->
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label for="borrower_name" class="form-label">
+                            <i class="bi bi-person"></i> Oluvchi ism-familiyasi *
+                        </label>
+                        <input type="text" class="form-control" id="borrower_name" name="borrower_name" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="borrower_phone" class="form-label">
+                            <i class="bi bi-telephone"></i> Telefon raqami *
+                        </label>
+                        <input type="tel" class="form-control" id="borrower_phone" name="borrower_phone"
+                               placeholder="+998 90 123 45 67" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="borrower_id" class="form-label">
+                            <i class="bi bi-card-text"></i> ID / Passport (ixtiyoriy)
+                        </label>
+                        <input type="text" class="form-control" id="borrower_id" name="borrower_id">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="due_date" class="form-label">
+                            <i class="bi bi-calendar-event"></i> Qaytarish muddati *
+                        </label>
+                        <input type="date" class="form-control" id="due_date" name="due_date"
+                               value="{{ default_due_date|date:'Y-m-d' }}" min="{{ default_due_date|date:'Y-m-d' }}" required>
+                        <small class="text-muted">Standart muddat: 14 kun</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">
+                            <i class="bi bi-chat-left-text"></i> Izohlar (ixtiyoriy)
+                        </label>
+                        <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        <strong>Diqqat!</strong> Kitobni vaqtida qaytarish muhim. Muddati o'tgan kitoblar uchun jarimalar qo'llanilishi mumkin.
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-check-circle"></i> Tasdiqlash va berish
+                        </button>
+                        <a href="{% url 'book_detail' book.id %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i> Bekor qilish
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
